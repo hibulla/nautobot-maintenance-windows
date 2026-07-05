@@ -1,5 +1,7 @@
 # Nautobot Maintenance Windows
 
+[![CI](https://github.com/hibulla/nautobot-maintenance-windows/actions/workflows/ci.yml/badge.svg)](https://github.com/hibulla/nautobot-maintenance-windows/actions/workflows/ci.yml)
+
 A Nautobot app for managing global UTC maintenance windows and exclusion windows for network devices.
 
 The app helps NetDevOps teams answer two operational questions:
@@ -172,6 +174,17 @@ Run tests from a configured Nautobot development environment:
 ```shell
 nautobot-server test nautobot_maintenance_windows
 ```
+
+## Continuous Integration
+
+GitHub Actions runs on pushes to `main` and on pull requests.
+
+The CI workflow currently checks:
+
+- dependency installation with Poetry
+- Ruff linting
+- Python source compilation
+- package build
 
 ## Design Notes
 
