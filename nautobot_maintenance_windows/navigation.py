@@ -1,5 +1,6 @@
 """Menu items."""
 
+from django.templatetags.static import static
 from nautobot.apps.ui import NavMenuAddButton, NavMenuGroup, NavMenuItem, NavMenuTab
 
 maintenance_window_items = (
@@ -46,7 +47,7 @@ maintenance_window_items = (
 menu_items = (
     NavMenuTab(
         name="Maintenance Windows",
-        icon="mdi-calendar-clock",
+        icon=static("nautobot_maintenance_windows/icons/calendar-clock.svg"),
         groups=(
             NavMenuGroup(
                 name="Maintenance Windows",
