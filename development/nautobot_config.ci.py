@@ -2,6 +2,8 @@
 
 import os
 
+from nautobot.core.settings import *  # noqa: F403
+
 ALLOWED_HOSTS = ["*"]
 SECRET_KEY = os.environ.get("NAUTOBOT_SECRET_KEY", "ci-only-secret-key-not-for-production")
 DEBUG = False
