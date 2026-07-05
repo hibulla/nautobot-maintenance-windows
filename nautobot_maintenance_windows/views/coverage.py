@@ -3,7 +3,7 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render
 from django.views import View
-from nautobot.apps.tables import paginate_table
+from django_tables2 import RequestConfig
 
 from nautobot_maintenance_windows import tables
 from nautobot_maintenance_windows.services.coverage import get_coverage_report
@@ -26,7 +26,7 @@ class CoverageDashboardView(PermissionRequiredMixin, View):
             "devices_only_exclusion_table": tables.CoverageDeviceTable(report.devices_only_exclusion),
         }
         for table in table_map.values():
-            paginate_table(table, request)
+            RequestConfig(request, paginate={"per_page": 50}).configure(table)
 
         return render(
             request,
