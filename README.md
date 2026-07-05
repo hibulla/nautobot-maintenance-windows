@@ -185,6 +185,8 @@ The CI workflow currently checks:
 - Ruff linting
 - Python source compilation
 - package build
+- Nautobot Docker image build with this app installed
+- Nautobot system checks, migrations, and app tests against PostgreSQL and Redis
 
 ## Design Notes
 

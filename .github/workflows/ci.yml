@@ -24,10 +24,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -54,10 +54,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
@@ -66,3 +66,76 @@ jobs:
 
       - name: Build package
         run: poetry build
+
+  nautobot-integration:
+    name: Nautobot Integration
+    runs-on: ubuntu-latest
+    needs:
+      - lint-and-syntax
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: nautobot
+          POSTGRES_USER: nautobot
+          POSTGRES_PASSWORD: nautobot
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U nautobot -d nautobot"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 12
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 12
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Build Nautobot image with app installed
+        run: docker build --file development/Dockerfile.ci --tag nautobot-maintenance-windows-ci .
+
+      - name: Run Nautobot system checks
+        run: |
+          docker run --rm --network host \
+            --entrypoint bash \
+            -e NAUTOBOT_DB_HOST=127.0.0.1 \
+            -e NAUTOBOT_DB_NAME=nautobot \
+            -e NAUTOBOT_DB_USER=nautobot \
+            -e NAUTOBOT_DB_PASSWORD=nautobot \
+            -e NAUTOBOT_REDIS_HOST=127.0.0.1 \
+            nautobot-maintenance-windows-ci \
+            -lc "nautobot-server check"
+
+      - name: Run database migrations
+        run: |
+          docker run --rm --network host \
+            --entrypoint bash \
+            -e NAUTOBOT_DB_HOST=127.0.0.1 \
+            -e NAUTOBOT_DB_NAME=nautobot \
+            -e NAUTOBOT_DB_USER=nautobot \
+            -e NAUTOBOT_DB_PASSWORD=nautobot \
+            -e NAUTOBOT_REDIS_HOST=127.0.0.1 \
+            nautobot-maintenance-windows-ci \
+            -lc "nautobot-server migrate --no-input"
+
+      - name: Run Nautobot app tests
+        run: |
+          docker run --rm --network host \
+            --entrypoint bash \
+            -e NAUTOBOT_DB_HOST=127.0.0.1 \
+            -e NAUTOBOT_DB_NAME=nautobot \
+            -e NAUTOBOT_DB_USER=nautobot \
+            -e NAUTOBOT_DB_PASSWORD=nautobot \
+            -e NAUTOBOT_REDIS_HOST=127.0.0.1 \
+            nautobot-maintenance-windows-ci \
+            -lc "nautobot-server test nautobot_maintenance_windows --keepdb"

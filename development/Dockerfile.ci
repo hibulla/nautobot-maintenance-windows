@@ -1,0 +1,10 @@
+ARG NAUTOBOT_IMAGE=networktocode/nautobot:stable-py3.12
+
+FROM ${NAUTOBOT_IMAGE}
+
+WORKDIR /tmp/nautobot-maintenance-windows
+
+COPY . /tmp/nautobot-maintenance-windows
+COPY development/nautobot_config.ci.py /opt/nautobot/nautobot_config.py
+
+RUN pip install --no-cache-dir /tmp/nautobot-maintenance-windows
