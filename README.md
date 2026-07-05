@@ -20,6 +20,7 @@ It is intentionally informational and evaluative. It does not implement priority
 - Strict UTC-only schedule handling.
 - Support for schedules that cross midnight or span multiple days.
 - Nautobot UI views, tables, forms, navigation, and RBAC permissions.
+- Coverage dashboard for identifying incomplete Maintenance Window data.
 - REST API serializers, filters, and viewsets.
 - Nautobot Jobs for device eligibility, change validation, and bulk assignment.
 - Unit tests for schedule matching, exclusion blocking, jobs, and assignment behavior.
@@ -120,6 +121,16 @@ The job is idempotent:
 - existing assignments are counted as unchanged
 - missing assignments during unassign are counted as unchanged
 - integrity errors are logged and returned in the summary
+
+### Audit Maintenance Window Coverage
+
+Reports Maintenance Window data quality gaps:
+
+- devices without active Maintenance Window assignments
+- Maintenance Windows without schedules
+- inactive Maintenance Windows still assigned to devices
+- schedules without device impact
+- devices with only exclusion windows
 
 ## REST API
 

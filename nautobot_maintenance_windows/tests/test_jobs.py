@@ -71,3 +71,14 @@ class MaintenanceWindowJobsTest(TransactionTestCase):
                 maintenance_window=self.exclusion,
             ).exists()
         )
+
+    def test_audit_coverage_job_runs_successfully(self):
+        job_result = create_job_result_and_run_job(
+            JOB_MODULE,
+            "AuditMaintenanceWindowCoverageJob",
+            username=self.user.username,
+        )
+
+        self.assertJobResultStatus(job_result)
+        log_messages = list(job_result.job_log_entries.values_list("message", flat=True))
+        self.assertTrue(any("Coverage summary" in message for message in log_messages))

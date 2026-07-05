@@ -1,5 +1,6 @@
 """Django urlpatterns declaration for nautobot_maintenance_windows app."""
 
+from django.urls import path
 from nautobot.apps.urls import NautobotUIViewSetRouter
 
 from nautobot_maintenance_windows import views
@@ -11,4 +12,8 @@ router.register("maintenance-windows", views.MaintenanceWindowUIViewSet)
 router.register("schedules", views.MaintenanceWindowScheduleUIViewSet)
 router.register("device-assignments", views.DeviceMaintenanceWindowAssignmentUIViewSet)
 
-urlpatterns = router.urls
+urlpatterns = [
+    path("coverage/", views.CoverageDashboardView.as_view(), name="coverage"),
+]
+
+urlpatterns += router.urls

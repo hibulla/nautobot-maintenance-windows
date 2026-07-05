@@ -3,6 +3,7 @@
 import django_tables2 as tables
 from nautobot.apps.tables import BaseTable, BooleanColumn, ButtonsColumn, LinkedCountColumn, ToggleColumn
 from nautobot.apps.ui import ObjectsTablePanel
+from nautobot.dcim.models import Device
 
 from nautobot_maintenance_windows import models
 
@@ -70,6 +71,49 @@ class DeviceMaintenanceWindowAssignmentTable(BaseTable):
 
         model = models.DeviceMaintenanceWindowAssignment
         fields = ("pk", "device", "maintenance_window", "actions")
+        default_columns = fields
+
+
+class CoverageDeviceTable(BaseTable):
+    """Read-only device table for coverage reports."""
+
+    name = tables.Column(linkify=True)
+    status = tables.Column(linkify=True)
+    role = tables.Column(linkify=True)
+    location = tables.Column(linkify=True)
+
+    class Meta(BaseTable.Meta):
+        """Meta attributes."""
+
+        model = Device
+        fields = ("name", "status", "role", "location")
+        default_columns = fields
+
+
+class CoverageMaintenanceWindowTable(BaseTable):
+    """Read-only MaintenanceWindow table for coverage reports."""
+
+    name = tables.Column(linkify=True)
+    is_active = BooleanColumn()
+
+    class Meta(BaseTable.Meta):
+        """Meta attributes."""
+
+        model = models.MaintenanceWindow
+        fields = ("name", "window_type", "is_active", "schedule_count", "assigned_device_count")
+        default_columns = fields
+
+
+class CoverageScheduleTable(BaseTable):
+    """Read-only MaintenanceWindowSchedule table for coverage reports."""
+
+    maintenance_window = tables.Column(linkify=True)
+
+    class Meta(BaseTable.Meta):
+        """Meta attributes."""
+
+        model = models.MaintenanceWindowSchedule
+        fields = ("maintenance_window", "start_day_of_week", "start_time", "end_day_of_week", "end_time", "timezone")
         default_columns = fields
 
 

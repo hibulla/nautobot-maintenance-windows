@@ -7,6 +7,7 @@ from nautobot.dcim.models import Device
 from nautobot.extras.jobs import BooleanVar, Job, MultiObjectVar, StringVar
 
 from nautobot_maintenance_windows import models
+from nautobot_maintenance_windows.services.coverage import get_coverage_report
 from nautobot_maintenance_windows.services.evaluator import (
     evaluate_devices,
     require_utc_datetime,
@@ -167,6 +168,25 @@ class BulkMaintenanceWindowAssignmentJob(Job):
         return summary
 
 
+class AuditMaintenanceWindowCoverageJob(Job):
+    """Report Maintenance Window coverage gaps."""
+
+    class Meta:
+        """Meta attributes."""
+
+        name = "Audit Maintenance Window Coverage"
+        description = "Report devices and windows with incomplete Maintenance Window coverage data."
+        has_sensitive_variables = False
+
+    def run(self):
+        """Generate and log the coverage report."""
+        report = get_coverage_report(self.user)
+        for line in report.log_lines:
+            self.logger.info(line)
+        self.logger.info("Coverage summary: %s", report.summary)
+        return report.summary
+
+
 def _match_to_dict(match):
     schedule = match.schedule
     data = {
@@ -192,5 +212,10 @@ def _parse_utc_datetime(value, field_name):
     return require_utc_datetime(parsed, field_name)
 
 
-jobs = [DeviceMaintenanceEligibilityJob, ChangeValidationJob, BulkMaintenanceWindowAssignmentJob]
+jobs = [
+    DeviceMaintenanceEligibilityJob,
+    ChangeValidationJob,
+    BulkMaintenanceWindowAssignmentJob,
+    AuditMaintenanceWindowCoverageJob,
+]
 register_jobs(*jobs)
