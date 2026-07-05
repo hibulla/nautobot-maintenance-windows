@@ -52,7 +52,7 @@ class MaintenanceWindowFilterForm(NautobotFilterForm):
     device = DynamicModelChoiceField(queryset=Device.objects.all(), required=False)
 
 
-class MaintenanceWindowScheduleForm(NautobotModelForm):
+class MaintenanceWindowScheduleForm(forms.ModelForm):
     """MaintenanceWindowSchedule create/edit form."""
 
     maintenance_window = DynamicModelChoiceField(queryset=models.MaintenanceWindow.objects.all())
@@ -88,7 +88,7 @@ class MaintenanceWindowScheduleFilterForm(NautobotFilterForm):
     end_day_of_week = forms.ChoiceField(required=False, choices=(("", "---------"),) + tuple(DAY_OF_WEEK_CHOICES))
 
 
-class DeviceMaintenanceWindowAssignmentForm(NautobotModelForm):
+class DeviceMaintenanceWindowAssignmentForm(forms.ModelForm):
     """DeviceMaintenanceWindowAssignment create/edit form."""
 
     device = DynamicModelChoiceField(queryset=Device.objects.all())
