@@ -9,9 +9,6 @@ keywords = ["nautobot", "nautobot-app", "nautobot-plugin", "maintenance-windows"
 packages = [
     { include = "nautobot_maintenance_windows" },
 ]
-include = [
-    { path = "nautobot_maintenance_windows/static/**/*", format = ["sdist", "wheel"] },
-]
 
 [tool.poetry.dependencies]
 python = ">=3.12,<3.15"
