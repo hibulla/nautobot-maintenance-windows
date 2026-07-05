@@ -14,6 +14,14 @@ from nautobot.dcim.models import Device
 from nautobot_maintenance_windows import models
 from nautobot_maintenance_windows.choices import DAY_OF_WEEK_CHOICES, MaintenanceWindowTypeChoices
 
+TIME_INPUT_WIDGET = forms.TimeInput(
+    attrs={
+        "type": "time",
+        "step": "60",
+    },
+    format="%H:%M",
+)
+
 
 class MaintenanceWindowForm(NautobotModelForm):
     """MaintenanceWindow create/edit form."""
@@ -56,6 +64,16 @@ class MaintenanceWindowScheduleForm(forms.ModelForm):
     """MaintenanceWindowSchedule create/edit form."""
 
     maintenance_window = DynamicModelChoiceField(queryset=models.MaintenanceWindow.objects.all())
+    start_time = forms.TimeField(
+        input_formats=["%H:%M"],
+        widget=TIME_INPUT_WIDGET,
+        help_text="UTC time in HH:MM format.",
+    )
+    end_time = forms.TimeField(
+        input_formats=["%H:%M"],
+        widget=TIME_INPUT_WIDGET,
+        help_text="UTC time in HH:MM format.",
+    )
 
     class Meta:
         """Meta attributes."""
@@ -72,9 +90,9 @@ class MaintenanceWindowScheduleBulkEditForm(BootstrapMixin, BulkEditForm):
         widget=forms.MultipleHiddenInput,
     )
     start_day_of_week = forms.ChoiceField(required=False, choices=DAY_OF_WEEK_CHOICES)
-    start_time = forms.TimeField(required=False)
+    start_time = forms.TimeField(required=False, input_formats=["%H:%M"], widget=TIME_INPUT_WIDGET)
     end_day_of_week = forms.ChoiceField(required=False, choices=DAY_OF_WEEK_CHOICES)
-    end_time = forms.TimeField(required=False)
+    end_time = forms.TimeField(required=False, input_formats=["%H:%M"], widget=TIME_INPUT_WIDGET)
 
 
 class MaintenanceWindowScheduleFilterForm(NautobotFilterForm):

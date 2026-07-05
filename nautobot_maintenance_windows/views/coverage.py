@@ -27,6 +27,7 @@ class CoverageDashboardView(PermissionRequiredMixin, View):
         }
         for table in table_map.values():
             RequestConfig(request, paginate={"per_page": 50}).configure(table)
+        rendered_tables = {name: table.as_html(request) for name, table in table_map.items()}
 
         return render(
             request,
@@ -34,6 +35,6 @@ class CoverageDashboardView(PermissionRequiredMixin, View):
             {
                 "report": report,
                 "summary": report.summary,
-                **table_map,
+                **rendered_tables,
             },
         )

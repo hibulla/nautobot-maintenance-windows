@@ -1,6 +1,4 @@
 {% extends 'generic/object_list.html' %}
-{% load helpers %}
-{% load render_table from django_tables2 %}
 
 {% block title %}Maintenance Window Coverage{% endblock %}
 
@@ -47,35 +45,35 @@
     <div class="panel panel-default">
         <div class="panel-heading"><strong>Devices Without Active Maintenance Window Assignments</strong></div>
         <div class="panel-body">
-            {% render_table devices_without_windows_table %}
+            {{ devices_without_windows_table|safe }}
         </div>
     </div>
 
     <div class="panel panel-default">
         <div class="panel-heading"><strong>Maintenance Windows Without Schedules</strong></div>
         <div class="panel-body">
-            {% render_table windows_without_schedules_table %}
+            {{ windows_without_schedules_table|safe }}
         </div>
     </div>
 
     <div class="panel panel-default">
         <div class="panel-heading"><strong>Inactive Maintenance Windows Assigned To Devices</strong></div>
         <div class="panel-body">
-            {% render_table inactive_assigned_windows_table %}
+            {{ inactive_assigned_windows_table|safe }}
         </div>
     </div>
 
     <div class="panel panel-default">
         <div class="panel-heading"><strong>Schedules Without Device Impact</strong></div>
         <div class="panel-body">
-            {% render_table schedules_without_device_impact_table %}
+            {{ schedules_without_device_impact_table|safe }}
         </div>
     </div>
 
     <div class="panel panel-default">
         <div class="panel-heading"><strong>Devices With Only Exclusion Windows</strong></div>
         <div class="panel-body">
-            {% render_table devices_only_exclusion_table %}
+            {{ devices_only_exclusion_table|safe }}
         </div>
     </div>
 {% endblock %}
