@@ -51,7 +51,7 @@ maintenance_window_items = (
 
 menu_items = (
     NavMenuTab(
-        name="Maintenance Windows",
+        name="Maintenance",
         icon=NavigationIconChoices.DEVICE_LIFECYCLE,
         groups=(
             NavMenuGroup(

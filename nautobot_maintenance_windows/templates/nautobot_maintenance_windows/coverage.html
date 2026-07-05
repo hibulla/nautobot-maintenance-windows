@@ -3,77 +3,79 @@
 {% block title %}Maintenance Window Coverage{% endblock %}
 
 {% block content %}
-    <div class="row">
-        <div class="col-md-2">
-            <div class="panel panel-default">
-                <div class="panel-heading"><strong>Total Devices</strong></div>
-                <div class="panel-body text-center"><h2>{{ summary.total_devices }}</h2></div>
+    <div class="coverage-dashboard">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-6 g-3 mb-4">
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-header"><strong>Total Devices</strong></div>
+                    <div class="card-body text-center"><h2 class="mb-0">{{ summary.total_devices }}</h2></div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-header"><strong>Covered Devices</strong></div>
+                    <div class="card-body text-center"><h2 class="mb-0">{{ summary.covered_devices }}</h2></div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-header"><strong>Uncovered Devices</strong></div>
+                    <div class="card-body text-center"><h2 class="mb-0">{{ summary.uncovered_devices }}</h2></div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-header"><strong>Active Windows</strong></div>
+                    <div class="card-body text-center"><h2 class="mb-0">{{ summary.active_windows }}</h2></div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-header"><strong>Windows Without Schedules</strong></div>
+                    <div class="card-body text-center"><h2 class="mb-0">{{ summary.windows_without_schedules }}</h2></div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-header"><strong>Assignments</strong></div>
+                    <div class="card-body text-center"><h2 class="mb-0">{{ summary.active_assignments }}</h2></div>
+                </div>
             </div>
         </div>
-        <div class="col-md-2">
-            <div class="panel panel-default">
-                <div class="panel-heading"><strong>Covered Devices</strong></div>
-                <div class="panel-body text-center"><h2>{{ summary.covered_devices }}</h2></div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="panel panel-default">
-                <div class="panel-heading"><strong>Uncovered Devices</strong></div>
-                <div class="panel-body text-center"><h2>{{ summary.uncovered_devices }}</h2></div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="panel panel-default">
-                <div class="panel-heading"><strong>Active Windows</strong></div>
-                <div class="panel-body text-center"><h2>{{ summary.active_windows }}</h2></div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="panel panel-default">
-                <div class="panel-heading"><strong>Windows Without Schedules</strong></div>
-                <div class="panel-body text-center"><h2>{{ summary.windows_without_schedules }}</h2></div>
-            </div>
-        </div>
-        <div class="col-md-2">
-            <div class="panel panel-default">
-                <div class="panel-heading"><strong>Assignments</strong></div>
-                <div class="panel-body text-center"><h2>{{ summary.active_assignments }}</h2></div>
-            </div>
-        </div>
-    </div>
 
-    <div class="panel panel-default">
-        <div class="panel-heading"><strong>Devices Without Active Maintenance Window Assignments</strong></div>
-        <div class="panel-body">
-            {{ devices_without_windows_table|safe }}
+        <div class="card mb-4">
+            <div class="card-header"><strong>Devices Without Active Maintenance Window Assignments</strong></div>
+            <div class="card-body">
+                <div class="table-responsive mb-0">{{ devices_without_windows_table|safe }}</div>
+            </div>
         </div>
-    </div>
 
-    <div class="panel panel-default">
-        <div class="panel-heading"><strong>Maintenance Windows Without Schedules</strong></div>
-        <div class="panel-body">
-            {{ windows_without_schedules_table|safe }}
+        <div class="card mb-4">
+            <div class="card-header"><strong>Maintenance Windows Without Schedules</strong></div>
+            <div class="card-body">
+                <div class="table-responsive mb-0">{{ windows_without_schedules_table|safe }}</div>
+            </div>
         </div>
-    </div>
 
-    <div class="panel panel-default">
-        <div class="panel-heading"><strong>Inactive Maintenance Windows Assigned To Devices</strong></div>
-        <div class="panel-body">
-            {{ inactive_assigned_windows_table|safe }}
+        <div class="card mb-4">
+            <div class="card-header"><strong>Inactive Maintenance Windows Assigned To Devices</strong></div>
+            <div class="card-body">
+                <div class="table-responsive mb-0">{{ inactive_assigned_windows_table|safe }}</div>
+            </div>
         </div>
-    </div>
 
-    <div class="panel panel-default">
-        <div class="panel-heading"><strong>Schedules Without Device Impact</strong></div>
-        <div class="panel-body">
-            {{ schedules_without_device_impact_table|safe }}
+        <div class="card mb-4">
+            <div class="card-header"><strong>Schedules Without Device Impact</strong></div>
+            <div class="card-body">
+                <div class="table-responsive mb-0">{{ schedules_without_device_impact_table|safe }}</div>
+            </div>
         </div>
-    </div>
 
-    <div class="panel panel-default">
-        <div class="panel-heading"><strong>Devices With Only Exclusion Windows</strong></div>
-        <div class="panel-body">
-            {{ devices_only_exclusion_table|safe }}
+        <div class="card mb-4">
+            <div class="card-header"><strong>Devices With Only Exclusion Windows</strong></div>
+            <div class="card-body">
+                <div class="table-responsive mb-0">{{ devices_only_exclusion_table|safe }}</div>
+            </div>
         </div>
     </div>
 {% endblock %}
