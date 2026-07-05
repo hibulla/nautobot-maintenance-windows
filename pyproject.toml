@@ -2,7 +2,7 @@
 name = "nautobot-maintenance-windows"
 version = "0.1.0"
 description = "A Nautobot plugin for managing UTC maintenance and exclusion windows for network devices."
-authors = ["Bartek"]
+authors = ["Hibulla.com"]
 license = "Apache-2.0"
 readme = "README.md"
 keywords = ["nautobot", "nautobot-app", "nautobot-plugin", "maintenance-windows"]

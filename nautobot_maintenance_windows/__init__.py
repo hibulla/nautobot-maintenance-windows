@@ -16,7 +16,7 @@ class NautobotMaintenanceWindowsConfig(NautobotAppConfig):
     name = "nautobot_maintenance_windows"
     verbose_name = "Maintenance Windows"
     version = __version__
-    author = "Bartek"
+    author = "Hibulla.com"
     description = "Manage UTC maintenance and exclusion windows for network devices."
     base_url = "maintenance-windows"
     min_version = "3.1.0"
