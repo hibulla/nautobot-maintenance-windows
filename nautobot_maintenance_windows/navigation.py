@@ -46,7 +46,7 @@ maintenance_window_items = (
 menu_items = (
     NavMenuTab(
         name="Maintenance Windows",
-        icon="mdi mdi-calendar-clock",
+        icon="mdi-calendar-clock",
         groups=(
             NavMenuGroup(
                 name="Maintenance Windows",
