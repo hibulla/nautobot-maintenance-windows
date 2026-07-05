@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "nautobot-maintenance-windows"
+version = "0.1.0"
+description = "A Nautobot plugin for managing UTC maintenance and exclusion windows for network devices."
+authors = ["Bartek"]
+license = "Apache-2.0"
+readme = "README.md"
+keywords = ["nautobot", "nautobot-app", "nautobot-plugin", "maintenance-windows"]
+packages = [
+    { include = "nautobot_maintenance_windows" },
+]
+
+[tool.poetry.dependencies]
+python = ">=3.12,<3.15"
+nautobot = ">=3.1.0,<4.0.0"
+
+[tool.poetry.group.dev.dependencies]
+coverage = "*"
+invoke = "*"
+ruff = "0.5.5"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["D", "F", "E", "W", "S", "I"]
+ignore = ["D203", "D212", "D213", "D401", "D407", "D416", "E501"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"nautobot_maintenance_windows/migrations/*" = ["D"]
+"nautobot_maintenance_windows/tests/*" = ["D", "S"]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
