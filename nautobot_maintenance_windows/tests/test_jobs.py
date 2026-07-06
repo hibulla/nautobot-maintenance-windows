@@ -3,6 +3,7 @@
 from datetime import datetime, time, timezone
 
 from nautobot.apps.testing import TransactionTestCase, create_job_result_and_run_job
+from nautobot.extras.choices import JobResultStatusChoices
 
 from nautobot_maintenance_windows.choices import MaintenanceWindowTypeChoices
 from nautobot_maintenance_windows.jobs import jobs as jobs_module
@@ -105,41 +106,47 @@ class MaintenanceWindowJobPermissionTest(TransactionTestCase):
         create_schedule(self.exclusion, start_day_of_week=0, start_time=time(9, 0), end_day_of_week=0, end_time=time(10, 0))
 
     def test_device_eligibility_job_rejects_without_schedule_permission(self):
-        job = jobs_module.DeviceMaintenanceEligibilityJob()
-        job.user = self.user
+        job_result = create_job_result_and_run_job(
+            JOB_MODULE,
+            "DeviceMaintenanceEligibilityJob",
+            username=self.user.username,
+            devices=[self.device.pk],
+        )
 
-        with self.assertRaises(PermissionError):
-            job.run(devices=[self.device])
+        self.assertJobResultStatus(job_result, JobResultStatusChoices.STATUS_FAILURE)
 
     def test_change_validation_job_rejects_without_schedule_permission(self):
-        job = jobs_module.ChangeValidationJob()
-        job.user = self.user
+        job_result = create_job_result_and_run_job(
+            JOB_MODULE,
+            "ChangeValidationJob",
+            username=self.user.username,
+            devices=[self.device.pk],
+            proposed_start=datetime(2026, 7, 6, 9, 15, tzinfo=timezone.utc).isoformat(),
+            proposed_end=datetime(2026, 7, 6, 9, 45, tzinfo=timezone.utc).isoformat(),
+        )
 
-        with self.assertRaises(PermissionError):
-            job.run(
-                devices=[self.device],
-                proposed_start=datetime(2026, 7, 6, 9, 15, tzinfo=timezone.utc).isoformat(),
-                proposed_end=datetime(2026, 7, 6, 9, 45, tzinfo=timezone.utc).isoformat(),
-            )
+        self.assertJobResultStatus(job_result, JobResultStatusChoices.STATUS_FAILURE)
 
     def test_bulk_assignment_job_rejects_without_assign_permission(self):
-        job = jobs_module.BulkMaintenanceWindowAssignmentJob()
-        job.user = self.user
+        job_result = create_job_result_and_run_job(
+            JOB_MODULE,
+            "BulkMaintenanceWindowAssignmentJob",
+            username=self.user.username,
+            devices=[self.device.pk],
+            maintenance_windows=[self.exclusion.pk],
+            assign=True,
+        )
 
-        with self.assertRaises(PermissionError):
-            job.run(
-                devices=[self.device],
-                maintenance_windows=[self.exclusion],
-                assign=True,
-            )
+        self.assertJobResultStatus(job_result, JobResultStatusChoices.STATUS_FAILURE)
 
     def test_bulk_assignment_job_rejects_without_unassign_permission(self):
-        job = jobs_module.BulkMaintenanceWindowAssignmentJob()
-        job.user = self.user
+        job_result = create_job_result_and_run_job(
+            JOB_MODULE,
+            "BulkMaintenanceWindowAssignmentJob",
+            username=self.user.username,
+            devices=[self.device.pk],
+            maintenance_windows=[self.exclusion.pk],
+            assign=False,
+        )
 
-        with self.assertRaises(PermissionError):
-            job.run(
-                devices=[self.device],
-                maintenance_windows=[self.exclusion],
-                assign=False,
-            )
+        self.assertJobResultStatus(job_result, JobResultStatusChoices.STATUS_FAILURE)

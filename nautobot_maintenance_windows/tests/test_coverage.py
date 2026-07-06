@@ -50,5 +50,6 @@ class CoverageDashboardPermissionTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_coverage_dashboard_requires_login(self):
+        self.client.logout()
         response = self.client.get(reverse("plugins:nautobot_maintenance_windows:coverage"))
         self.assertEqual(response.status_code, 302)
