@@ -17,7 +17,7 @@ nautobot = ">=3.1.0,<4.0.0"
 [tool.poetry.group.dev.dependencies]
 coverage = "*"
 invoke = "*"
-ruff = "0.5.5"
+ruff = "0.15.20"
 
 [tool.ruff]
 line-length = 120
