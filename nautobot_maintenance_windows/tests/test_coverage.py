@@ -1,7 +1,6 @@
 """Tests for Maintenance Window coverage reporting."""
 
 from django.urls import reverse
-
 from nautobot.apps.testing import TestCase
 
 from nautobot_maintenance_windows.choices import MaintenanceWindowTypeChoices
