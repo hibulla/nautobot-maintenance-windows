@@ -23,7 +23,6 @@ maintenance_window_items = (
     NavMenuItem(
         link="plugins:nautobot_maintenance_windows:coverage",
         name="Coverage",
-        permissions=["nautobot_maintenance_windows.view_maintenancewindow"],
     ),
     NavMenuItem(
         link="plugins:nautobot_maintenance_windows:maintenancewindowschedule_list",

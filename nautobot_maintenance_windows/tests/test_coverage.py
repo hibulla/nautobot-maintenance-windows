@@ -1,5 +1,7 @@
 """Tests for Maintenance Window coverage reporting."""
 
+from django.urls import reverse
+
 from nautobot.apps.testing import TestCase
 
 from nautobot_maintenance_windows.choices import MaintenanceWindowTypeChoices
@@ -36,3 +38,14 @@ class CoverageReportTest(TestCase):
         self.assertIn(inactive, report.inactive_assigned_windows)
         self.assertIn(schedule_without_impact, report.schedules_without_device_impact)
         self.assertEqual(report.summary["devices_only_exclusion"], 1)
+
+
+class CoverageDashboardPermissionTest(TestCase):
+    """Coverage dashboard should be visible without window view permissions."""
+
+    user_permissions = ()
+
+    def test_coverage_dashboard_is_visible_without_view_permissions(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("plugins:nautobot_maintenance_windows:coverage"))
+        self.assertEqual(response.status_code, 200)

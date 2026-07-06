@@ -2,6 +2,8 @@
 
 from datetime import datetime, time, timezone
 
+from unittest.mock import patch
+
 from nautobot.apps.testing import TransactionTestCase, create_job_result_and_run_job
 
 from nautobot_maintenance_windows.choices import MaintenanceWindowTypeChoices
@@ -82,3 +84,70 @@ class MaintenanceWindowJobsTest(TransactionTestCase):
         self.assertJobResultStatus(job_result)
         log_messages = list(job_result.job_log_entries.values_list("message", flat=True))
         self.assertTrue(any("Coverage summary" in message for message in log_messages))
+
+    def test_device_eligibility_job_rejects_unviewable_devices(self):
+        job = jobs_module.DeviceMaintenanceEligibilityJob()
+        job.user = self.user
+
+        with patch("nautobot_maintenance_windows.jobs.jobs._objects_visible_to_user", return_value=[]), self.assertRaises(
+            PermissionError
+        ):
+            job.run(devices=[self.device])
+
+    def test_change_validation_job_rejects_unviewable_devices(self):
+        job = jobs_module.ChangeValidationJob()
+        job.user = self.user
+
+        with patch("nautobot_maintenance_windows.jobs.jobs._objects_visible_to_user", return_value=[]), self.assertRaises(
+            PermissionError
+        ):
+            job.run(
+                devices=[self.device],
+                proposed_start=datetime(2026, 7, 6, 9, 15, tzinfo=timezone.utc).isoformat(),
+                proposed_end=datetime(2026, 7, 6, 9, 45, tzinfo=timezone.utc).isoformat(),
+            )
+
+    def test_bulk_assignment_job_rejects_without_assign_permission(self):
+        job = jobs_module.BulkMaintenanceWindowAssignmentJob()
+        job.user = self.user
+
+        with patch.object(self.user, "has_perm", return_value=False), self.assertRaises(PermissionError):
+            job.run(
+                devices=[self.device],
+                maintenance_windows=[self.exclusion],
+                assign=True,
+            )
+
+    def test_bulk_assignment_job_rejects_without_unassign_permission(self):
+        job = jobs_module.BulkMaintenanceWindowAssignmentJob()
+        job.user = self.user
+
+        with patch.object(self.user, "has_perm", return_value=False), self.assertRaises(PermissionError):
+            job.run(
+                devices=[self.device],
+                maintenance_windows=[self.exclusion],
+                assign=False,
+            )
+
+    def test_bulk_assignment_job_rejects_unviewable_windows(self):
+        def visible_objects(_, model_class, objects):
+            if model_class.__name__ == "Device":
+                return [self.device]
+            return []
+
+        job = jobs_module.BulkMaintenanceWindowAssignmentJob()
+        job.user = self.user
+
+        with (
+            patch.object(self.user, "has_perm", return_value=True),
+            patch(
+                "nautobot_maintenance_windows.jobs.jobs._objects_visible_to_user",
+                side_effect=visible_objects,
+            ),
+            self.assertRaises(PermissionError),
+        ):
+            job.run(
+                devices=[self.device],
+                maintenance_windows=[self.exclusion],
+                assign=True,
+            )

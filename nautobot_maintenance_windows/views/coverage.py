@@ -1,6 +1,5 @@
 """Coverage dashboard views."""
 
-from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render
 from django.views import View
 from django_tables2 import RequestConfig
@@ -9,15 +8,13 @@ from nautobot_maintenance_windows import tables
 from nautobot_maintenance_windows.services.coverage import get_coverage_report
 
 
-class CoverageDashboardView(PermissionRequiredMixin, View):
+class CoverageDashboardView(View):
     """Read-only coverage dashboard for Maintenance Window data quality."""
-
-    permission_required = "nautobot_maintenance_windows.view_maintenancewindow"
     template_name = "nautobot_maintenance_windows/coverage.html"
 
     def get(self, request):
         """Render the dashboard."""
-        report = get_coverage_report(request.user)
+        report = get_coverage_report()
         table_map = {
             "devices_without_windows_table": tables.CoverageDeviceTable(report.devices_without_windows),
             "windows_without_schedules_table": tables.CoverageMaintenanceWindowTable(report.windows_without_schedules),
