@@ -1,5 +1,6 @@
 """Coverage dashboard views."""
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import render
 from django.views import View
 from django_tables2 import RequestConfig
@@ -8,7 +9,7 @@ from nautobot_maintenance_windows import tables
 from nautobot_maintenance_windows.services.coverage import get_coverage_report
 
 
-class CoverageDashboardView(View):
+class CoverageDashboardView(LoginRequiredMixin, View):
     """Read-only coverage dashboard for Maintenance Window data quality."""
     template_name = "nautobot_maintenance_windows/coverage.html"
 

@@ -29,6 +29,13 @@ class DeviceMaintenanceEligibilityJob(Job):
 
     def run(self, *, devices):
         """Evaluate selected devices."""
+        _require_permissions(
+            self.user,
+            (
+                "nautobot_maintenance_windows.view_maintenancewindow",
+                "nautobot_maintenance_windows.view_maintenancewindowschedule",
+            ),
+        )
         allowed_devices = list(_objects_visible_to_user(self.user, Device, devices))
         if len(allowed_devices) != len(devices):
             raise PermissionError("User does not have permission to evaluate all selected devices.")
@@ -72,6 +79,13 @@ class ChangeValidationJob(Job):
     def run(self, *, devices, proposed_start, proposed_end):
         """Validate the proposed change interval."""
         try:
+            _require_permissions(
+                self.user,
+                (
+                    "nautobot_maintenance_windows.view_maintenancewindow",
+                    "nautobot_maintenance_windows.view_maintenancewindowschedule",
+                ),
+            )
             start = _parse_utc_datetime(proposed_start, "proposed_start")
             end = _parse_utc_datetime(proposed_end, "proposed_end")
             allowed_devices = list(_objects_visible_to_user(self.user, Device, devices))
@@ -156,6 +170,22 @@ class BulkMaintenanceWindowAssignmentJob(Job):
 
         for device in allowed_devices:
             for window in allowed_windows:
+                permission = (
+                    "nautobot_maintenance_windows.add_devicemaintenancewindowassignment"
+                    if assign
+                    else "nautobot_maintenance_windows.delete_devicemaintenancewindowassignment"
+                )
+                assignment = models.DeviceMaintenanceWindowAssignment(device=device, maintenance_window=window)
+                if not assign:
+                    assignment = (
+                        models.DeviceMaintenanceWindowAssignment.objects.filter(
+                            device=device,
+                            maintenance_window=window,
+                        ).first()
+                        or assignment
+                    )
+                if not _has_object_permission(self.user, permission, assignment):
+                    raise PermissionError("User does not have permission to modify this device assignment.")
                 try:
                     with transaction.atomic():
                         if assign:
@@ -233,6 +263,16 @@ def _parse_utc_datetime(value, field_name):
     if parsed is None:
         raise ValueError(f"{field_name} must be a valid ISO-8601 datetime.")
     return require_utc_datetime(parsed, field_name)
+
+
+def _require_permissions(user, permissions):
+    missing = [permission for permission in permissions if not user.has_perm(permission)]
+    if missing:
+        raise PermissionError(f"User is missing required permissions: {', '.join(missing)}.")
+
+
+def _has_object_permission(user, permission, obj):
+    return user.has_perm(permission, obj) or user.has_perm(permission)
 
 
 def _objects_visible_to_user(user, model_class, objects):

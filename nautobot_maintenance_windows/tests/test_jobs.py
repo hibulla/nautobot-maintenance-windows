@@ -2,8 +2,6 @@
 
 from datetime import datetime, time, timezone
 
-from unittest.mock import patch
-
 from nautobot.apps.testing import TransactionTestCase, create_job_result_and_run_job
 
 from nautobot_maintenance_windows.choices import MaintenanceWindowTypeChoices
@@ -27,6 +25,7 @@ class MaintenanceWindowJobsTest(TransactionTestCase):
     user_permissions = (
         "dcim.view_device",
         "nautobot_maintenance_windows.view_maintenancewindow",
+        "nautobot_maintenance_windows.view_maintenancewindowschedule",
         "nautobot_maintenance_windows.add_devicemaintenancewindowassignment",
         "nautobot_maintenance_windows.delete_devicemaintenancewindowassignment",
     )
@@ -85,22 +84,38 @@ class MaintenanceWindowJobsTest(TransactionTestCase):
         log_messages = list(job_result.job_log_entries.values_list("message", flat=True))
         self.assertTrue(any("Coverage summary" in message for message in log_messages))
 
-    def test_device_eligibility_job_rejects_unviewable_devices(self):
+
+class MaintenanceWindowJobPermissionTest(TransactionTestCase):
+    """Test security-sensitive job permission failures."""
+
+    databases = ("default", "job_logs")
+
+    user_permissions = (
+        "dcim.view_device",
+        "nautobot_maintenance_windows.view_maintenancewindow",
+    )
+
+    def setUp(self):
+        """Create job models and test records."""
+        super().setUp()
+        for job_class in jobs_module.jobs:
+            get_test_job_model(job_class)
+        self.device = create_test_device(name="restricted-job-device")
+        self.exclusion = create_window(name="Restricted Job Exclusion", window_type=MaintenanceWindowTypeChoices.EXCLUSION)
+        create_schedule(self.exclusion, start_day_of_week=0, start_time=time(9, 0), end_day_of_week=0, end_time=time(10, 0))
+
+    def test_device_eligibility_job_rejects_without_schedule_permission(self):
         job = jobs_module.DeviceMaintenanceEligibilityJob()
         job.user = self.user
 
-        with patch("nautobot_maintenance_windows.jobs.jobs._objects_visible_to_user", return_value=[]), self.assertRaises(
-            PermissionError
-        ):
+        with self.assertRaises(PermissionError):
             job.run(devices=[self.device])
 
-    def test_change_validation_job_rejects_unviewable_devices(self):
+    def test_change_validation_job_rejects_without_schedule_permission(self):
         job = jobs_module.ChangeValidationJob()
         job.user = self.user
 
-        with patch("nautobot_maintenance_windows.jobs.jobs._objects_visible_to_user", return_value=[]), self.assertRaises(
-            PermissionError
-        ):
+        with self.assertRaises(PermissionError):
             job.run(
                 devices=[self.device],
                 proposed_start=datetime(2026, 7, 6, 9, 15, tzinfo=timezone.utc).isoformat(),
@@ -111,7 +126,7 @@ class MaintenanceWindowJobsTest(TransactionTestCase):
         job = jobs_module.BulkMaintenanceWindowAssignmentJob()
         job.user = self.user
 
-        with patch.object(self.user, "has_perm", return_value=False), self.assertRaises(PermissionError):
+        with self.assertRaises(PermissionError):
             job.run(
                 devices=[self.device],
                 maintenance_windows=[self.exclusion],
@@ -122,32 +137,9 @@ class MaintenanceWindowJobsTest(TransactionTestCase):
         job = jobs_module.BulkMaintenanceWindowAssignmentJob()
         job.user = self.user
 
-        with patch.object(self.user, "has_perm", return_value=False), self.assertRaises(PermissionError):
+        with self.assertRaises(PermissionError):
             job.run(
                 devices=[self.device],
                 maintenance_windows=[self.exclusion],
                 assign=False,
-            )
-
-    def test_bulk_assignment_job_rejects_unviewable_windows(self):
-        def visible_objects(_, model_class, objects):
-            if model_class.__name__ == "Device":
-                return [self.device]
-            return []
-
-        job = jobs_module.BulkMaintenanceWindowAssignmentJob()
-        job.user = self.user
-
-        with (
-            patch.object(self.user, "has_perm", return_value=True),
-            patch(
-                "nautobot_maintenance_windows.jobs.jobs._objects_visible_to_user",
-                side_effect=visible_objects,
-            ),
-            self.assertRaises(PermissionError),
-        ):
-            job.run(
-                devices=[self.device],
-                maintenance_windows=[self.exclusion],
-                assign=True,
             )

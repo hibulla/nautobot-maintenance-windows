@@ -41,7 +41,7 @@ class CoverageReportTest(TestCase):
 
 
 class CoverageDashboardPermissionTest(TestCase):
-    """Coverage dashboard should be visible without window view permissions."""
+    """Coverage dashboard should be visible to authenticated users without window view permissions."""
 
     user_permissions = ()
 
@@ -49,3 +49,7 @@ class CoverageDashboardPermissionTest(TestCase):
         self.client.force_login(self.user)
         response = self.client.get(reverse("plugins:nautobot_maintenance_windows:coverage"))
         self.assertEqual(response.status_code, 200)
+
+    def test_coverage_dashboard_requires_login(self):
+        response = self.client.get(reverse("plugins:nautobot_maintenance_windows:coverage"))
+        self.assertEqual(response.status_code, 302)
