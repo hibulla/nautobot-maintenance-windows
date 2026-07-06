@@ -4,7 +4,7 @@
 
 {% block content %}
     <div class="coverage-dashboard">
-        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-6 g-3 mb-4">
+        <div class="row row-cols-1 row-cols-md-2 row-cols-xl-6 g-3 mb-4" style="margin-bottom: 2rem;">
             <div class="col">
                 <div class="card h-100">
                     <div class="card-header"><strong>Total Devices</strong></div>
@@ -43,35 +43,35 @@
             </div>
         </div>
 
-        <div class="card mb-5">
+        <div class="card mb-5" style="margin-bottom: 2rem;">
             <div class="card-header"><strong>Devices Without Active Maintenance Window Assignments</strong></div>
             <div class="card-body">
                 <div class="table-responsive mb-0">{{ devices_without_windows_table|safe }}</div>
             </div>
         </div>
 
-        <div class="card mb-5">
+        <div class="card mb-5" style="margin-bottom: 2rem;">
             <div class="card-header"><strong>Maintenance Windows Without Schedules</strong></div>
             <div class="card-body">
                 <div class="table-responsive mb-0">{{ windows_without_schedules_table|safe }}</div>
             </div>
         </div>
 
-        <div class="card mb-5">
+        <div class="card mb-5" style="margin-bottom: 2rem;">
             <div class="card-header"><strong>Inactive Maintenance Windows Assigned To Devices</strong></div>
             <div class="card-body">
                 <div class="table-responsive mb-0">{{ inactive_assigned_windows_table|safe }}</div>
             </div>
         </div>
 
-        <div class="card mb-5">
+        <div class="card mb-5" style="margin-bottom: 2rem;">
             <div class="card-header"><strong>Schedules Without Device Impact</strong></div>
             <div class="card-body">
                 <div class="table-responsive mb-0">{{ schedules_without_device_impact_table|safe }}</div>
             </div>
         </div>
 
-        <div class="card mb-5">
+        <div class="card mb-5" style="margin-bottom: 2rem;">
             <div class="card-header"><strong>Devices With Only Exclusion Windows</strong></div>
             <div class="card-body">
                 <div class="table-responsive mb-0">{{ devices_only_exclusion_table|safe }}</div>
