@@ -74,6 +74,34 @@ class DeviceMaintenanceWindowAssignmentTable(BaseTable):
         default_columns = fields
 
 
+class DeviceAssignedMaintenanceWindowTable(BaseTable):
+    """Read-only table for MaintenanceWindow assignments on a Device detail view."""
+
+    maintenance_window = tables.Column(linkify=True, order_by=("maintenance_window__name",))
+    window_type = tables.Column(
+        accessor="maintenance_window.window_type",
+        order_by=("maintenance_window__window_type",),
+        verbose_name="Type",
+    )
+    is_active = BooleanColumn(
+        accessor="maintenance_window.is_active",
+        order_by=("maintenance_window__is_active",),
+        verbose_name="Active",
+    )
+
+    class Meta(BaseTable.Meta):
+        """Meta attributes."""
+
+        model = models.DeviceMaintenanceWindowAssignment
+        fields = ("maintenance_window", "window_type", "is_active")
+        default_columns = fields
+
+    @staticmethod
+    def render_window_type(record):
+        """Render the MaintenanceWindow type label."""
+        return record.maintenance_window.get_window_type_display()
+
+
 class CoverageDeviceTable(BaseTable):
     """Read-only device table for coverage reports."""
 
@@ -137,3 +165,15 @@ class MaintenanceWindowAssignedDevicesPanel(ObjectsTablePanel):
     related_field_name = "maintenance_window"
     exclude_columns = ["maintenance_window"]
     add_button_route = None
+
+
+class DeviceMaintenanceWindowsPanel(ObjectsTablePanel):
+    """Detail panel listing MaintenanceWindows assigned to a Device."""
+
+    label = "Maintenance Windows"
+    table_class = DeviceAssignedMaintenanceWindowTable
+    table_attribute = "maintenance_window_assignments"
+    related_field_name = "device"
+    select_related_fields = ["maintenance_window"]
+    add_button_route = None
+    enable_bulk_actions = False
