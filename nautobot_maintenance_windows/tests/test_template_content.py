@@ -19,3 +19,4 @@ class DeviceMaintenanceWindowContentTest(TestCase):
         panel = DeviceMaintenanceWindowContent.object_detail_panels[0]
         self.assertIsInstance(panel, tables.DeviceMaintenanceWindowsPanel)
         self.assertEqual(panel.section, SectionChoices.FULL_WIDTH)
+        self.assertEqual(panel.table_title, "Assigned Windows")

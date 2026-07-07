@@ -1,6 +1,7 @@
 """Tables for nautobot_maintenance_windows."""
 
 import django_tables2 as tables
+from django.utils.html import format_html_join
 from nautobot.apps.tables import BaseTable, BooleanColumn, ButtonsColumn, LinkedCountColumn, ToggleColumn
 from nautobot.apps.ui import ObjectsTablePanel
 from nautobot.dcim.models import Device
@@ -88,18 +89,27 @@ class DeviceAssignedMaintenanceWindowTable(BaseTable):
         order_by=("maintenance_window__is_active",),
         verbose_name="Active",
     )
+    schedules = tables.Column(empty_values=(), orderable=False, verbose_name="Schedules")
 
     class Meta(BaseTable.Meta):
         """Meta attributes."""
 
         model = models.DeviceMaintenanceWindowAssignment
-        fields = ("maintenance_window", "window_type", "is_active")
+        fields = ("maintenance_window", "window_type", "is_active", "schedules")
         default_columns = fields
 
     @staticmethod
     def render_window_type(record):
         """Render the MaintenanceWindow type label."""
         return record.maintenance_window.get_window_type_display()
+
+    @staticmethod
+    def render_schedules(record):
+        """Render assigned MaintenanceWindow schedules as concrete UTC intervals."""
+        schedules = record.maintenance_window.schedules.all()
+        if not schedules:
+            return "No schedules"
+        return format_html_join("", "<div>{}</div>", ((_format_schedule(schedule),) for schedule in schedules))
 
 
 class CoverageDeviceTable(BaseTable):
@@ -173,7 +183,19 @@ class DeviceMaintenanceWindowsPanel(ObjectsTablePanel):
     label = "Maintenance Windows"
     table_class = DeviceAssignedMaintenanceWindowTable
     table_attribute = "maintenance_window_assignments"
+    table_title = "Assigned Windows"
     related_field_name = "device"
     select_related_fields = ["maintenance_window"]
+    prefetch_related_fields = ["maintenance_window__schedules"]
     add_button_route = None
     enable_bulk_actions = False
+
+
+def _format_schedule(schedule):
+    start = f"{schedule.start_time:%H:%M}"
+    end = f"{schedule.end_time:%H:%M}"
+    start_day = schedule.get_start_day_of_week_display()
+    end_day = schedule.get_end_day_of_week_display()
+    if schedule.start_day_of_week == schedule.end_day_of_week:
+        return f"{start_day} {start}-{end} UTC"
+    return f"{start_day} {start} - {end_day} {end} UTC"
