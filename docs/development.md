@@ -92,6 +92,8 @@ Pushing the tag starts the `Publish to PyPI` workflow. The workflow validates th
 
 The publishing workflow supports PyPI Trusted Publishing when the repository and PyPI project are configured for it. If Trusted Publishing is not configured, add a repository secret named `PYPI_API_TOKEN`; when that secret is present, the workflow publishes with the API token instead.
 
+For the exact PyPI and GitHub setup fields, see `docs/pypi-publishing.md`.
+
 ## Packaging Notes
 
 - Project metadata lives in `pyproject.toml`.

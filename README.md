@@ -89,6 +89,7 @@ This schedule blocks changes every Friday 22:00 UTC through Saturday 02:00 UTC f
 - [Usage Guide](docs/usage.md)
 - [REST API](docs/api.md)
 - [Development Guide](docs/development.md)
+- [Publishing to PyPI](docs/pypi-publishing.md)
 - [Changelog](CHANGELOG.md)
 - [Security Policy](SECURITY.md)
 - [Contributing](CONTRIBUTING.md)

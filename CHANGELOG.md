@@ -9,6 +9,7 @@ This project follows semantic versioning for published Python package releases.
 ### Added
 
 - Public usage, API, development, contribution, support, and security documentation.
+- Field-by-field PyPI publishing setup documentation for Trusted Publishing and API token fallback.
 
 ## [0.1.0] - 2026-07-10
 
