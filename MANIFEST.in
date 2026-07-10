@@ -1,0 +1,7 @@
+include CHANGELOG.md
+include CONTRIBUTING.md
+include LICENSE
+include SECURITY.md
+include SUPPORT.md
+recursive-include docs *.md
+recursive-include nautobot_maintenance_windows/templates *.html

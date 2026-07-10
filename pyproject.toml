@@ -1,23 +1,61 @@
-[tool.poetry]
+[build-system]
+requires = ["setuptools>=77.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
 name = "nautobot-maintenance-windows"
 version = "0.1.0"
-description = "A Nautobot plugin for managing UTC maintenance and exclusion windows for network devices."
-authors = ["Hibulla.com"]
-license = "Apache-2.0"
+description = "A Nautobot app for managing UTC maintenance and exclusion windows for network devices."
 readme = "README.md"
+requires-python = ">=3.12,<3.15"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+authors = [
+    { name = "hibulla.com", email = "contact@hibulla.com" },
+]
 keywords = ["nautobot", "nautobot-app", "nautobot-plugin", "maintenance-windows"]
-packages = [
-    { include = "nautobot_maintenance_windows" },
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Framework :: Django",
+    "Intended Audience :: System Administrators",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: System :: Networking",
+]
+dependencies = [
+    "nautobot>=3.1.0,<4.0.0",
 ]
 
-[tool.poetry.dependencies]
-python = ">=3.12,<3.15"
-nautobot = ">=3.1.0,<4.0.0"
+[project.optional-dependencies]
+dev = [
+    "build",
+    "coverage",
+    "invoke",
+    "ruff==0.15.20",
+    "twine",
+]
 
-[tool.poetry.group.dev.dependencies]
-coverage = "*"
-invoke = "*"
-ruff = "0.15.20"
+[project.urls]
+Homepage = "https://github.com/hibulla/nautobot-maintenance-windows"
+Documentation = "https://github.com/hibulla/nautobot-maintenance-windows/tree/main/docs"
+Repository = "https://github.com/hibulla/nautobot-maintenance-windows"
+Issues = "https://github.com/hibulla/nautobot-maintenance-windows/issues"
+Changelog = "https://github.com/hibulla/nautobot-maintenance-windows/blob/main/CHANGELOG.md"
+Support = "https://github.com/hibulla/nautobot-maintenance-windows/blob/main/SUPPORT.md"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["nautobot_maintenance_windows*"]
+
+[tool.setuptools.package-data]
+nautobot_maintenance_windows = ["templates/**/*.html"]
 
 [tool.ruff]
 line-length = 120
@@ -33,7 +71,3 @@ convention = "google"
 [tool.ruff.lint.per-file-ignores]
 "nautobot_maintenance_windows/migrations/*" = ["D"]
 "nautobot_maintenance_windows/tests/*" = ["D", "S"]
-
-[build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
